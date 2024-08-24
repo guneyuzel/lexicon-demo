@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { PublicKey } from "@solana/web3.js";
 
 type Contact = {
   name: string;
@@ -13,20 +14,27 @@ export default function ContactsList() {
   const [newPublicKey, setNewPublicKey] = useState("");
 
   useEffect(() => {
-    // TODO: Fetch contacts from the backend
-    const mockContacts: Contact[] = [
-      { name: "Alice", publicKey: "ALiCeXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" },
-      { name: "Bob", publicKey: "BoBXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" },
-    ];
-    setContacts(mockContacts);
+    const storedContacts = localStorage.getItem("contacts");
+    if (storedContacts) {
+      setContacts(JSON.parse(storedContacts));
+    }
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem("contacts", JSON.stringify(contacts));
+  }, [contacts]);
 
   const addContact = (e: React.FormEvent) => {
     e.preventDefault();
     if (newName && newPublicKey) {
-      setContacts([...contacts, { name: newName, publicKey: newPublicKey }]);
-      setNewName("");
-      setNewPublicKey("");
+      try {
+        new PublicKey(newPublicKey); // Validate the public key
+        setContacts([...contacts, { name: newName, publicKey: newPublicKey }]);
+        setNewName("");
+        setNewPublicKey("");
+      } catch (error) {
+        alert("Invalid public key");
+      }
     }
   };
 
