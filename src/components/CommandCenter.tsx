@@ -7,6 +7,7 @@ import { PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL, Connection } f
 import { useTransactionStore } from '@/stores/transactionStore';
 import VoiceCommand from './VoiceCommand';
 import TransactionFeedback from './TransactionFeedback';
+import { IconSend } from '@tabler/icons-react';
 
 export default function CommandCenter() {
   const [command, setCommand] = useState("");
@@ -61,7 +62,7 @@ export default function CommandCenter() {
   };
 
   return (
-    <div className="bg-gray-800 p-6 rounded-lg">
+    <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
       <h3 className="text-2xl font-bold mb-4 text-white">Command Center</h3>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="flex items-center space-x-2">
@@ -70,16 +71,17 @@ export default function CommandCenter() {
             value={command}
             onChange={(e) => setCommand(e.target.value)}
             placeholder="Enter your command (e.g., send 1 sol to Guney)"
-            className="flex-grow p-3 bg-gray-700 rounded text-white"
+            className="flex-grow p-3 bg-gray-700 rounded text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             aria-label="Command input"
           />
           <VoiceCommand onCommand={handleVoiceCommand} />
         </div>
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white p-3 rounded hover:bg-blue-700 transition duration-200"
+          className="w-full bg-blue-600 text-white p-3 rounded hover:bg-blue-700 transition duration-200 flex items-center justify-center"
           disabled={!connected}
         >
+          <IconSend className="mr-2" size={20} />
           Execute Command
         </button>
       </form>
