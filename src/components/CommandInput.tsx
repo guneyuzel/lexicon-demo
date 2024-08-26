@@ -55,38 +55,21 @@ export default function CommandInput() {
       const signature = await connection.sendRawTransaction(signedTransaction.serialize());
 
       console.log("Transaction sent:", signature);
-      useTransactionStore.getState().setStatus('pending', `Transaction sent: ${signature}`);
+      useTransactionStore.getState().setStatus('pending', `Transaction sent: ${signature}`, signature);
 
-      let timeoutId: NodeJS.Timeout | undefined;
+      const confirmationPromise = connection.confirmTransaction(signature, 'confirmed');
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error("Transaction confirmation timeout")), 60000)
+      );
+
       try {
-        const confirmationPromise = new Promise<void>((resolve, reject) => {
-          timeoutId = setTimeout(() => reject(new Error("Transaction confirmation timeout")), 60000);
-          connection.onSignature(
-            signature,
-            (result) => {
-              clearTimeout(timeoutId);
-              if (result.err) {
-                reject(new Error("Transaction failed"));
-              } else {
-                resolve();
-              }
-            },
-            'confirmed'
-          );
-        });
-
-        await confirmationPromise;
-
+        await Promise.race([confirmationPromise, timeoutPromise]);
         console.log("Transaction confirmed:", signature);
         setError(null);
         useTransactionStore.getState().setStatus('success', `Transaction confirmed: ${signature}`, signature);
       } catch (confirmError) {
         console.error("Confirmation error:", confirmError);
-        useTransactionStore.getState().setStatus('error', confirmError instanceof Error ? confirmError.message : "Transaction confirmation failed");
-      } finally {
-        if (timeoutId) {
-          clearTimeout(timeoutId);
-        }
+        useTransactionStore.getState().setStatus('error', confirmError instanceof Error ? confirmError.message : "Transaction confirmation failed", signature);
       }
     } catch (error) {
       console.error("Error executing command:", error);
