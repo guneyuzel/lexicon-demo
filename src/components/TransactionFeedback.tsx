@@ -7,18 +7,34 @@ export default function TransactionFeedback() {
 
   if (status === 'idle') return null;
 
+  const getSolscanLink = (signature: string) => {
+    return `https://solscan.io/tx/${signature}?cluster=devnet`;
+  };
+
   return (
-    <div className="w-full max-w-md mt-8 p-4 rounded bg-gray-100 border border-gray-300">
-      <div className={`mb-2 font-bold ${status === 'success' ? 'text-green-600' : 'text-red-600'}`}>
+    <div className="mt-6 p-4 rounded bg-gray-700 border border-gray-600">
+      <div className={`text-lg font-bold ${status === 'success' ? 'text-green-400' : 'text-red-400'}`}>
         {status === 'success' ? 'Transaction Successful' : 'Transaction Failed'}
       </div>
-      <div className="text-sm text-gray-700 break-words">{message}</div>
-      {signature && (
-        <div className="mt-2 text-xs text-gray-500">
-          <span className="font-semibold">Signature:</span>
-          <span className="block mt-1 break-all">{signature}</span>
+      {status === 'success' && signature && (
+        <div className="mt-2">
+          <a 
+            href={getSolscanLink(signature)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-400 hover:text-blue-300 text-sm font-medium"
+          >
+            Check on Solscan
+          </a>
         </div>
       )}
+      {signature && (
+        <div className="mt-2 text-sm text-gray-300">
+          <span className="font-medium">Signature:</span>
+          <span className="block mt-1 break-all text-xs">{signature}</span>
+        </div>
+      )}
+      <div className="mt-2 text-sm text-gray-400 break-words">{message}</div>
     </div>
   );
 }

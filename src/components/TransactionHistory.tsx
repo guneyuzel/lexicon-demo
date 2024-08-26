@@ -36,6 +36,10 @@ export default function TransactionHistory() {
     return null;
   }
 
+  const getSolscanLink = (signature: string) => {
+    return `https://solscan.io/tx/${signature}?cluster=devnet`;
+  };
+
   return (
     <div className="bg-gray-800 p-6 rounded-lg">
       <h3 className="text-2xl font-bold mb-4">Recent Transactions</h3>
@@ -43,7 +47,15 @@ export default function TransactionHistory() {
         {transactions.map((tx) => (
           <li key={tx.signature} className="bg-gray-700 p-4 rounded">
             <p className="text-sm break-all">
-              <span className="font-semibold">Signature:</span> {tx.signature}
+              <span className="font-semibold">Signature:</span>{" "}
+              <a 
+                href={getSolscanLink(tx.signature)} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-blue-400 hover:text-blue-300"
+              >
+                {tx.signature}
+              </a>
             </p>
             <p className="text-sm">
               <span className="font-semibold">Status:</span> {tx.err ? 'Failed' : 'Success'}

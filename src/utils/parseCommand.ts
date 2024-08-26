@@ -1,15 +1,12 @@
-import { lookupContact } from "./contactLookup";
-import { PublicKey } from "@solana/web3.js";
-
 export function parseCommand(command: string) {
-  const parts = command.toLowerCase().split(' ');
+  const parts = command.split(' ');
   if (parts.length < 4) {
     throw new Error('Invalid command format. Use: send [amount] sol to [recipient_name_or_public_key]');
   }
 
-  const action = parts[0];
+  const action = parts[0].toLowerCase();
   const amount = parseFloat(parts[1]);
-  const token = parts[2];
+  const token = parts[2].toLowerCase();
   const recipientInput = parts.slice(4).join(' ');
 
   if (action !== 'send') {
@@ -24,22 +21,9 @@ export function parseCommand(command: string) {
     throw new Error('Invalid token. Only SOL is supported.');
   }
 
-  if (parts[3] !== 'to') {
+  if (parts[3].toLowerCase() !== 'to') {
     throw new Error('Invalid command format. Use: send [amount] sol to [recipient_name_or_public_key]');
   }
 
-  let recipient: string;
-  const contactPublicKey = lookupContact(recipientInput);
-  if (contactPublicKey) {
-    recipient = contactPublicKey;
-  } else {
-    try {
-      new PublicKey(recipientInput);
-      recipient = recipientInput;
-    } catch (error) {
-      throw new Error('Invalid recipient. Use a contact name or a valid public key.');
-    }
-  }
-
-  return { action, amount, token, recipient };
+  return { action, amount, token, recipient: recipientInput };
 }

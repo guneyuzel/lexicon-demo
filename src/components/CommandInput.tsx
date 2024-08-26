@@ -88,7 +88,7 @@ export default function CommandInput() {
 
       console.log("Transaction confirmed:", signature);
       setError(null);
-      useTransactionStore.getState().setStatus('success', `Transaction confirmed: ${signature}`);
+      useTransactionStore.getState().setStatus('success', `Transaction confirmed: ${signature}`, signature);
     } catch (error) {
       console.error("Error executing command:", error);
       useTransactionStore.getState().setStatus('error', error instanceof Error ? error.message : "An unknown error occurred");

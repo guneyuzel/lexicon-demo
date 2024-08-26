@@ -6,11 +6,12 @@ import { parseCommand } from "@/utils/parseCommand";
 import { PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL, Connection } from "@solana/web3.js";
 import { useTransactionStore } from '@/stores/transactionStore';
 import VoiceCommand from './VoiceCommand';
+import TransactionFeedback from './TransactionFeedback';
 
 export default function CommandCenter() {
   const [command, setCommand] = useState("");
   const { publicKey, signTransaction, connected } = useWallet();
-  const { status, message, signature, setStatus } = useTransactionStore();
+  const { setStatus } = useTransactionStore();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,7 +48,6 @@ export default function CommandCenter() {
         throw new Error("Transaction failed");
       }
 
-      setStatus('success', `Transaction confirmed: ${txSignature}`, txSignature);
     } catch (error) {
       console.error("Error executing command:", error);
       setStatus('error', error instanceof Error ? error.message : "An unknown error occurred");
@@ -62,7 +62,7 @@ export default function CommandCenter() {
 
   return (
     <div className="bg-gray-800 p-6 rounded-lg">
-      <h3 className="text-2xl font-bold mb-4">Command Center</h3>
+      <h3 className="text-2xl font-bold mb-4 text-white">Command Center</h3>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="flex items-center space-x-2">
           <input
@@ -83,17 +83,9 @@ export default function CommandCenter() {
           Execute Command
         </button>
       </form>
-      {status !== 'idle' && (
-        <div className={`mt-4 p-4 rounded ${status === 'success' ? 'bg-green-800' : status === 'error' ? 'bg-red-800' : 'bg-yellow-800'}`}>
-          <p className="font-bold">{status === 'success' ? 'Transaction Successful' : status === 'error' ? 'Transaction Failed' : 'Processing...'}</p>
-          <p className="text-sm mt-2">{message}</p>
-          {signature && (
-            <p className="text-xs mt-2 break-all">
-              <span className="font-semibold">Signature:</span> {signature}
-            </p>
-          )}
-        </div>
-      )}
+      <div className="mt-6">
+        <TransactionFeedback />
+      </div>
     </div>
   );
 }
