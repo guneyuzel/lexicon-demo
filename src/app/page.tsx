@@ -1,49 +1,33 @@
 "use client";
 
-import dynamic from 'next/dynamic';
 import { useState, useEffect } from 'react';
-import CommandInput from "@/components/CommandInput";
-import ContactsList from "@/components/ContactsList";
-import TransactionFeedback from "@/components/TransactionFeedback";
-
-const WalletMultiButtonDynamic = dynamic(
-  async () => (await import('@solana/wallet-adapter-react-ui')).WalletMultiButton,
-  { ssr: false }
-);
-
-const WalletConnectionCheck = dynamic(
-  async () => {
-    const { useWallet } = await import('@solana/wallet-adapter-react');
-    return function WalletConnectionCheck({ children }: { children: React.ReactNode }) {
-      const { connected } = useWallet();
-      return connected ? <>{children}</> : null;
-    };
-  },
-  { ssr: false }
-);
+import { useWallet } from "@solana/wallet-adapter-react";
+import { Connection, PublicKey, LAMPORTS_PER_SOL } from "@solana/web3.js";
+import CommandCenter from "@/components/CommandCenter";
 
 export default function Home() {
-  const [isClient, setIsClient] = useState(false);
+  const { publicKey, connected } = useWallet();
+  const [balance, setBalance] = useState<number | null>(null);
 
   useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  if (!isClient) {
-    return null; // or a loading spinner
-  }
+    if (connected && publicKey) {
+      const connection = new Connection("https://api.devnet.solana.com", "confirmed");
+      connection.getBalance(publicKey).then((bal) => {
+        setBalance(bal / LAMPORTS_PER_SOL);
+      });
+    }
+  }, [connected, publicKey]);
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-24">
-      <h1 className="text-4xl font-bold mb-8">Solana AI Assistant</h1>
-      <WalletMultiButtonDynamic />
-      <WalletConnectionCheck>
-        <div className="w-full max-w-md space-y-8 mt-8">
-          <CommandInput />
-          <ContactsList />
-          <TransactionFeedback />
+    <div className="space-y-8">
+      <h2 className="text-3xl font-bold">Dashboard</h2>
+      {connected && publicKey && (
+        <div className="bg-gray-800 p-4 rounded-lg">
+          <p className="text-lg">Wallet: {publicKey.toBase58()}</p>
+          <p className="text-lg">Balance: {balance !== null ? `${balance.toFixed(4)} SOL` : 'Loading...'}</p>
         </div>
-      </WalletConnectionCheck>
-    </main>
+      )}
+      <CommandCenter />
+    </div>
   );
 }
