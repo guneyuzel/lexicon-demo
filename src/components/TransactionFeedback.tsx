@@ -13,10 +13,14 @@ export default function TransactionFeedback() {
 
   return (
     <div className="mt-6 p-4 rounded bg-gray-700 border border-gray-600">
-      <div className={`text-lg font-bold ${status === 'success' ? 'text-green-400' : 'text-red-400'}`}>
-        {status === 'success' ? 'Transaction Successful' : 'Transaction Failed'}
+      <div className={`text-lg font-bold ${
+        status === 'success' ? 'text-green-400' : 
+        status === 'pending' ? 'text-yellow-400' : 'text-red-400'
+      }`}>
+        {status === 'success' ? 'Transaction Successful' : 
+         status === 'pending' ? 'Transaction Pending' : 'Transaction Failed'}
       </div>
-      {status === 'success' && signature && (
+      {(status === 'success' || status === 'pending') && signature && (
         <div className="mt-2">
           <a 
             href={getSolscanLink(signature)}

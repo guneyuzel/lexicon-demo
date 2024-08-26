@@ -1,3 +1,5 @@
+import { lookupContact } from "./contactLookup";
+
 export function parseCommand(command: string) {
   const parts = command.split(' ');
   if (parts.length < 4) {
@@ -14,16 +16,18 @@ export function parseCommand(command: string) {
   }
 
   if (isNaN(amount) || amount <= 0) {
-    throw new Error('Invalid amount. Must be a positive number.');
+    throw new Error('Invalid amount. Please provide a positive number.');
   }
 
   if (token !== 'sol') {
     throw new Error('Invalid token. Only SOL is supported.');
   }
 
-  if (parts[3].toLowerCase() !== 'to') {
+  if (parts[3] !== 'to') {
     throw new Error('Invalid command format. Use: send [amount] sol to [recipient_name_or_public_key]');
   }
 
-  return { action, amount, token, recipient: recipientInput };
+  const recipientPublicKey = lookupContact(recipientInput) || recipientInput;
+
+  return { action, amount, token, recipient: recipientPublicKey };
 }

@@ -2,45 +2,30 @@
 
 import { useState, useEffect } from "react";
 import { PublicKey } from "@solana/web3.js";
-
-type Contact = {
-  name: string;
-  publicKey: string;
-};
+import { useContactsStore } from "@/stores/contactsStore";
 
 export default function ContactsList() {
-  const [contacts, setContacts] = useState<Contact[]>([]);
+  const { contacts, addContact, removeContact, loadContacts } = useContactsStore();
   const [newName, setNewName] = useState("");
   const [newPublicKey, setNewPublicKey] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
-    const storedContacts = localStorage.getItem("contacts");
-    if (storedContacts) {
-      setContacts(JSON.parse(storedContacts));
-    }
-  }, []);
+    loadContacts();
+  }, [loadContacts]);
 
-  useEffect(() => {
-    localStorage.setItem("contacts", JSON.stringify(contacts));
-  }, [contacts]);
-
-  const addContact = (e: React.FormEvent) => {
+  const handleAddContact = (e: React.FormEvent) => {
     e.preventDefault();
     if (newName && newPublicKey) {
       try {
         new PublicKey(newPublicKey);
-        setContacts([...contacts, { name: newName, publicKey: newPublicKey }]);
+        addContact(newName, newPublicKey);
         setNewName("");
         setNewPublicKey("");
       } catch (error) {
         alert("Invalid public key");
       }
     }
-  };
-
-  const removeContact = (publicKey: string) => {
-    setContacts(contacts.filter(contact => contact.publicKey !== publicKey));
   };
 
   const filteredContacts = contacts.filter(contact =>
@@ -50,7 +35,7 @@ export default function ContactsList() {
 
   return (
     <div className="bg-gray-800 p-6 rounded-lg">
-      <h2 className="text-2xl font-bold mb-4">Contacts</h2>
+      <h2 className="text-2xl font-bold mb-4 text-white">Contacts</h2>
       <input
         type="text"
         value={searchTerm}
@@ -61,7 +46,7 @@ export default function ContactsList() {
       <ul className="space-y-2 mb-4">
         {filteredContacts.map((contact) => (
           <li key={contact.publicKey} className="flex justify-between items-center bg-gray-700 p-3 rounded">
-            <span>
+            <span className="text-white">
               <span className="font-bold">{contact.name}:</span>{" "}
               {contact.publicKey.slice(0, 4)}...{contact.publicKey.slice(-4)}
             </span>
@@ -75,7 +60,7 @@ export default function ContactsList() {
           </li>
         ))}
       </ul>
-      <form onSubmit={addContact} className="space-y-2">
+      <form onSubmit={handleAddContact} className="space-y-2">
         <input
           type="text"
           value={newName}

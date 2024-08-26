@@ -5,27 +5,17 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { parseCommand } from "@/utils/parseCommand";
 import { PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL, Connection } from "@solana/web3.js";
 import { useTransactionStore } from '@/stores/transactionStore';
-
-type Contact = {
-  name: string;
-  publicKey: string;
-};
+import { useContactsStore } from '@/stores/contactsStore';
 
 export default function CommandInput() {
   const [command, setCommand] = useState("");
   const { publicKey, signTransaction, connected } = useWallet();
   const [error, setError] = useState<string | null>(null);
-  const [contacts, setContacts] = useState<Contact[]>([]);
+  const { contacts, loadContacts } = useContactsStore();
 
   useEffect(() => {
-    // TODO: Fetch contacts from the backend or global state
-    const mockContacts: Contact[] = [
-      { name: "Alice", publicKey: "ALiCeXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" },
-      { name: "Bob", publicKey: "BoBXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" },
-      { name: "Guney", publicKey: "GunEYXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" },
-    ];
-    setContacts(mockContacts);
-  }, []);
+    loadContacts();
+  }, [loadContacts]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,29 +25,20 @@ export default function CommandInput() {
     }
 
     try {
+      useTransactionStore.getState().setStatus('pending', "Processing transaction...");
       const parsedCommand = parseCommand(command);
       console.log("Parsed command:", parsedCommand);
 
-      // Find the recipient's public key
       let recipientPublicKey: PublicKey;
-      const contactMatch = contacts.find(contact => contact.name.toLowerCase() === parsedCommand.recipient.toLowerCase());
-      if (contactMatch) {
-        recipientPublicKey = new PublicKey(contactMatch.publicKey);
-      } else {
-        try {
-          recipientPublicKey = new PublicKey(parsedCommand.recipient);
-        } catch (error) {
-          throw new Error("Invalid recipient. Please use a valid contact name or public key.");
-        }
+      try {
+        recipientPublicKey = new PublicKey(parsedCommand.recipient);
+      } catch (error) {
+        throw new Error("Invalid recipient. Please use a valid contact name or public key.");
       }
 
-      // Create a connection to the Solana network
       const connection = new Connection("https://api.devnet.solana.com", "confirmed");
-
-      // Create a new transaction
       const transaction = new Transaction();
 
-      // Add the transfer instruction to the transaction
       transaction.add(
         SystemProgram.transfer({
           fromPubkey: publicKey,
@@ -66,35 +47,52 @@ export default function CommandInput() {
         })
       );
 
-      // Get the latest blockhash
       const { blockhash } = await connection.getLatestBlockhash();
       transaction.recentBlockhash = blockhash;
       transaction.feePayer = publicKey;
 
-      // Sign the transaction
       const signedTransaction = await signTransaction(transaction);
-
-      // Send the transaction
       const signature = await connection.sendRawTransaction(signedTransaction.serialize());
 
       console.log("Transaction sent:", signature);
+      useTransactionStore.getState().setStatus('pending', `Transaction sent: ${signature}`);
 
-      // Wait for confirmation
-      const confirmation = await connection.confirmTransaction(signature);
+      let timeoutId: NodeJS.Timeout | undefined;
+      try {
+        const confirmationPromise = new Promise<void>((resolve, reject) => {
+          timeoutId = setTimeout(() => reject(new Error("Transaction confirmation timeout")), 60000);
+          connection.onSignature(
+            signature,
+            (result) => {
+              clearTimeout(timeoutId);
+              if (result.err) {
+                reject(new Error("Transaction failed"));
+              } else {
+                resolve();
+              }
+            },
+            'confirmed'
+          );
+        });
 
-      if (confirmation.value.err) {
-        throw new Error("Transaction failed");
+        await confirmationPromise;
+
+        console.log("Transaction confirmed:", signature);
+        setError(null);
+        useTransactionStore.getState().setStatus('success', `Transaction confirmed: ${signature}`, signature);
+      } catch (confirmError) {
+        console.error("Confirmation error:", confirmError);
+        useTransactionStore.getState().setStatus('error', confirmError instanceof Error ? confirmError.message : "Transaction confirmation failed");
+      } finally {
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+        }
       }
-
-      console.log("Transaction confirmed:", signature);
-      setError(null);
-      useTransactionStore.getState().setStatus('success', `Transaction confirmed: ${signature}`, signature);
     } catch (error) {
       console.error("Error executing command:", error);
       useTransactionStore.getState().setStatus('error', error instanceof Error ? error.message : "An unknown error occurred");
     }
 
-    // Reset the input field
     setCommand("");
   };
 
