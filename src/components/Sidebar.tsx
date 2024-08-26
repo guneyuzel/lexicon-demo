@@ -33,9 +33,6 @@ export default function Sidebar() {
           ))}
         </ul>
       </nav>
-      <div className="mt-auto">
-        <WalletMultiButton className="!bg-blue-600 hover:!bg-blue-700 w-full" />
-      </div>
     </div>
   );
 }
