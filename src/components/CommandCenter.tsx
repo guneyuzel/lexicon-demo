@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { useWallet } from "@solana/wallet-adapter-react";
+import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { parseCommand } from "@/utils/parseCommand";
-import { PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL, Connection } from "@solana/web3.js";
+import { Connection, PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL, clusterApiUrl } from "@solana/web3.js";
 import { useTransactionStore } from '@/stores/transactionStore';
 import VoiceCommand from './VoiceCommand';
 import { IconSend } from '@tabler/icons-react';
@@ -11,6 +11,7 @@ import { IconSend } from '@tabler/icons-react';
 export default function CommandCenter() {
   const [command, setCommand] = useState("");
   const { publicKey, signTransaction, connected } = useWallet();
+  const { connection } = useConnection();
   const { setStatus } = useTransactionStore();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -24,7 +25,6 @@ export default function CommandCenter() {
       setStatus('pending', "Processing transaction...");
       const parsedCommand = parseCommand(command);
       
-      const connection = new Connection("https://api.devnet.solana.com", "confirmed");
       const transaction = new Transaction();
       
       transaction.add(
