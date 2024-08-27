@@ -8,9 +8,11 @@ interface ParsedCommand {
 }
 
 export function parseCommand(command: string): ParsedCommand {
-  // Extract action
-  const actionRegex = /\b(send|transfer)\b/i;
-  const actionMatch = command.match(actionRegex);
+  const lowercaseCommand = command.toLowerCase();
+
+  // Extract action (send or transfer)
+  const actionRegex = /(send|transfer)/i;
+  const actionMatch = lowercaseCommand.match(actionRegex);
   if (!actionMatch) {
     throw new Error('Invalid command. Please specify "send" or "transfer".');
   }
@@ -26,12 +28,12 @@ export function parseCommand(command: string): ParsedCommand {
   const token = amountTokenMatch[3].toLowerCase();
 
   // Extract recipient
-  const recipientRegex = /\bto\s+(.+)$/i;
+  const recipientRegex = /(?:to\s+)?(\S+)(?:\s+\d+(?:\.\d+)?\s*sol\b|\s*$)/i;
   const recipientMatch = command.match(recipientRegex);
   if (!recipientMatch) {
-    throw new Error('Invalid command. Please specify a recipient (e.g., "to Alice" or "to <public key>").');
+    throw new Error('Invalid command. Please specify a recipient.');
   }
-  const recipientInput = recipientMatch[1].trim();
+  const recipientInput = recipientMatch[1].replace(/[.!?]+$/, '');
 
   // Lookup contact or use as public key
   const recipient = lookupContact(recipientInput) || recipientInput;
