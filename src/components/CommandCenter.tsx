@@ -71,7 +71,7 @@ export default function CommandCenter() {
             type="text"
             value={command}
             onChange={(e) => setCommand(e.target.value)}
-            placeholder="Enter your command (e.g., send 1 sol to Guney)"
+            placeholder="Enter your command (e.g., 'Send 1 SOL to Alice' or 'Transfer 2.5 SOL to abc123')"
             className="flex-grow p-3 bg-gray-700 rounded text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             aria-label="Command input"
           />

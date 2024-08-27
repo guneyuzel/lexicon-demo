@@ -1,33 +1,40 @@
 import { lookupContact } from "./contactLookup";
 
-export function parseCommand(command: string) {
-  const parts = command.split(' ');
-  if (parts.length < 4) {
-    throw new Error('Invalid command format. Use: send [amount] sol to [recipient_name_or_public_key]');
+interface ParsedCommand {
+  action: string;
+  amount: number;
+  token: string;
+  recipient: string;
+}
+
+export function parseCommand(command: string): ParsedCommand {
+  // Extract action
+  const actionRegex = /\b(send|transfer)\b/i;
+  const actionMatch = command.match(actionRegex);
+  if (!actionMatch) {
+    throw new Error('Invalid command. Please specify "send" or "transfer".');
   }
+  const action = actionMatch[0].toLowerCase();
 
-  const action = parts[0].toLowerCase();
-  const amount = parseFloat(parts[1]);
-  const token = parts[2].toLowerCase();
-  const recipientInput = parts.slice(4).join(' ');
-
-  if (action !== 'send') {
-    throw new Error('Invalid action. Only "send" is supported.');
+  // Extract amount and token
+  const amountTokenRegex = /(\d+(\.\d+)?)\s*(sol)\b/i;
+  const amountTokenMatch = command.match(amountTokenRegex);
+  if (!amountTokenMatch) {
+    throw new Error('Invalid command. Please specify an amount and token (e.g., "10 SOL").');
   }
+  const amount = parseFloat(amountTokenMatch[1]);
+  const token = amountTokenMatch[3].toLowerCase();
 
-  if (isNaN(amount) || amount <= 0) {
-    throw new Error('Invalid amount. Please provide a positive number.');
+  // Extract recipient
+  const recipientRegex = /\bto\s+(.+)$/i;
+  const recipientMatch = command.match(recipientRegex);
+  if (!recipientMatch) {
+    throw new Error('Invalid command. Please specify a recipient (e.g., "to Alice" or "to <public key>").');
   }
+  const recipientInput = recipientMatch[1].trim();
 
-  if (token !== 'sol') {
-    throw new Error('Invalid token. Only SOL is supported.');
-  }
+  // Lookup contact or use as public key
+  const recipient = lookupContact(recipientInput) || recipientInput;
 
-  if (parts[3] !== 'to') {
-    throw new Error('Invalid command format. Use: send [amount] sol to [recipient_name_or_public_key]');
-  }
-
-  const recipientPublicKey = lookupContact(recipientInput) || recipientInput;
-
-  return { action, amount, token, recipient: recipientPublicKey };
+  return { action, amount, token, recipient };
 }
