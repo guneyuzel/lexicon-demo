@@ -6,6 +6,7 @@ import { parseCommand } from "@/utils/parseCommand";
 import { Connection, PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL, clusterApiUrl } from "@solana/web3.js";
 import { useTransactionStore } from '@/stores/transactionStore';
 import VoiceCommand from './VoiceCommand';
+import TransactionFeedback from './TransactionFeedback';
 import { IconSend } from '@tabler/icons-react';
 
 export default function CommandCenter() {
@@ -42,12 +43,14 @@ export default function CommandCenter() {
       const signedTransaction = await signTransaction(transaction);
       const txSignature = await connection.sendRawTransaction(signedTransaction.serialize());
 
+      setStatus('pending', "Confirming transaction...");
       const confirmation = await connection.confirmTransaction(txSignature);
 
       if (confirmation.value.err) {
         throw new Error("Transaction failed");
       }
 
+      setStatus('success', "Transaction successful!", txSignature);
     } catch (error) {
       console.error("Error executing command:", error);
       setStatus('error', error instanceof Error ? error.message : "An unknown error occurred");
@@ -84,6 +87,7 @@ export default function CommandCenter() {
           Execute Command
         </button>
       </form>
+      <TransactionFeedback />
     </div>
   );
 }

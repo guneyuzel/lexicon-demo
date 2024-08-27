@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { IconHome, IconUsers, IconHistory } from '@tabler/icons-react';
 import { ClusterToggle } from './ClusterToggle';
 import { useConnection } from '@solana/wallet-adapter-react';
