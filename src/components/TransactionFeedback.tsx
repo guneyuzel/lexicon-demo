@@ -2,7 +2,7 @@ import { useTransactionStore } from '@/stores/transactionStore';
 import { IconCheck, IconX, IconLoader2 } from '@tabler/icons-react';
 
 export default function TransactionFeedback() {
-  const { status, message, signature } = useTransactionStore();
+  const { status, message, signature, setStatus } = useTransactionStore();
 
   if (status === 'idle') return null;
 
@@ -25,8 +25,19 @@ export default function TransactionFeedback() {
     }
   };
 
+  const handleClose = () => {
+    setStatus('idle', '');
+  };
+
   return (
-    <div className={`mt-4 p-4 rounded-lg ${statusColors[status]} text-white`}>
+    <div className={`mt-4 p-4 rounded-lg ${statusColors[status]} text-white relative`}>
+      <button
+        onClick={handleClose}
+        className="absolute top-2 right-2 text-white hover:text-gray-200"
+        aria-label="Close"
+      >
+        <IconX size={20} />
+      </button>
       <div className="flex items-center space-x-2">
         <StatusIcon />
         <span className="font-semibold">{status.charAt(0).toUpperCase() + status.slice(1)}</span>
