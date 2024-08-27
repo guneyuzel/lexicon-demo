@@ -6,7 +6,6 @@ import { parseCommand } from "@/utils/parseCommand";
 import { PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL, Connection } from "@solana/web3.js";
 import { useTransactionStore } from '@/stores/transactionStore';
 import VoiceCommand from './VoiceCommand';
-import TransactionFeedback from './TransactionFeedback';
 import { IconSend } from '@tabler/icons-react';
 
 export default function CommandCenter() {
@@ -85,9 +84,6 @@ export default function CommandCenter() {
           Execute Command
         </button>
       </form>
-      <div className="mt-6">
-        <TransactionFeedback />
-      </div>
     </div>
   );
 }

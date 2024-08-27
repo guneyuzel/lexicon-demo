@@ -25,7 +25,6 @@ export default function CommandInput() {
     }
 
     try {
-      useTransactionStore.getState().setStatus('pending', "Processing transaction...");
       const parsedCommand = parseCommand(command);
       console.log("Parsed command:", parsedCommand);
 
@@ -55,25 +54,18 @@ export default function CommandInput() {
       const signature = await connection.sendRawTransaction(signedTransaction.serialize());
 
       console.log("Transaction sent:", signature);
-      useTransactionStore.getState().setStatus('pending', `Transaction sent: ${signature}`, signature);
 
-      const confirmationPromise = connection.confirmTransaction(signature, 'confirmed');
-      const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error("Transaction confirmation timeout")), 60000)
-      );
-
-      try {
-        await Promise.race([confirmationPromise, timeoutPromise]);
-        console.log("Transaction confirmed:", signature);
-        setError(null);
-        useTransactionStore.getState().setStatus('success', `Transaction confirmed: ${signature}`, signature);
-      } catch (confirmError) {
-        console.error("Confirmation error:", confirmError);
-        useTransactionStore.getState().setStatus('error', confirmError instanceof Error ? confirmError.message : "Transaction confirmation failed", signature);
+      const confirmation = await connection.confirmTransaction(signature, 'confirmed');
+      
+      if (confirmation.value.err) {
+        throw new Error("Transaction failed");
       }
+
+      console.log("Transaction confirmed:", signature);
+      setError(null);
     } catch (error) {
       console.error("Error executing command:", error);
-      useTransactionStore.getState().setStatus('error', error instanceof Error ? error.message : "An unknown error occurred");
+      setError(error instanceof Error ? error.message : "An unknown error occurred");
     }
 
     setCommand("");
