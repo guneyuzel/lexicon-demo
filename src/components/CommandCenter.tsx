@@ -7,6 +7,7 @@ import { PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL, Connection } f
 import { useTransactionStore } from '@/stores/transactionStore';
 import VoiceCommand from './VoiceCommand';
 import { IconSend } from '@tabler/icons-react';
+import TransactionFeedback from './TransactionFeedback';
 
 export default function CommandCenter() {
   const [command, setCommand] = useState("");
@@ -48,6 +49,7 @@ export default function CommandCenter() {
         throw new Error("Transaction failed");
       }
 
+      setStatus('success', "Transaction successful!", txSignature);
     } catch (error) {
       console.error("Error executing command:", error);
       setStatus('error', error instanceof Error ? error.message : "An unknown error occurred");
@@ -84,6 +86,7 @@ export default function CommandCenter() {
           Execute Command
         </button>
       </form>
+      <TransactionFeedback />
     </div>
   );
 }
