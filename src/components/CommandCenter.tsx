@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { parseCommand } from "@/utils/parseCommand";
-import { PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL, Connection } from "@solana/web3.js";
+import { PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL, Connection, TransactionConfirmationStrategy } from "@solana/web3.js";
 import { useTransactionStore } from '@/stores/transactionStore';
 import VoiceCommand from './VoiceCommand';
 import { IconSend } from '@tabler/icons-react';
@@ -98,7 +98,13 @@ export default function CommandCenter() {
       const signedTransaction = await signTransaction(transaction);
       const txSignature = await connection.sendRawTransaction(signedTransaction.serialize());
 
-      const confirmation = await connection.confirmTransaction(txSignature);
+      const confirmationStrategy: TransactionConfirmationStrategy = {
+        signature: txSignature,
+        blockhash: transaction.recentBlockhash,
+        lastValidBlockHeight: (await connection.getLatestBlockhash()).lastValidBlockHeight,
+      };
+
+      const confirmation = await connection.confirmTransaction(confirmationStrategy);
 
       if (confirmation.value.err) {
         throw new Error("Transaction failed");
