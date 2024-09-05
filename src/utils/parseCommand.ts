@@ -17,7 +17,7 @@ export function parseCommand(command: string): ParsedCommand {
   const action = actionMatch[0].toLowerCase();
 
   // Extract amount and token
-  const amountTokenRegex = /(\d+(?:\.\d+)?)\s*(sol)\b/i;
+  const amountTokenRegex = /(\d+(?:\.\d+)?)\s*(sol|solana)\b/i;
   const amountTokenMatch = command.match(amountTokenRegex);
   if (!amountTokenMatch) {
     throw new Error('Invalid command. Please specify an amount and token (e.g., "10 SOL").');
