@@ -58,8 +58,8 @@ export default function CommandCenter() {
     setCommand("");
   };
 
-  const handleVoiceCommand = (voiceCommand: string) => {
-    setCommand(voiceCommand);
+  const handleVoiceTranscript = (transcript: string) => {
+    setCommand(transcript);
   };
 
   return (
@@ -75,7 +75,7 @@ export default function CommandCenter() {
             className="flex-grow p-3 bg-gray-700 rounded text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             aria-label="Command input"
           />
-          <VoiceCommand onCommand={handleVoiceCommand} />
+          <VoiceCommand onTranscript={handleVoiceTranscript} language="en-US" />
         </div>
         <button
           type="submit"

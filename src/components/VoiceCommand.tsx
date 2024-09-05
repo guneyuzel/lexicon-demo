@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { IconMicrophone, IconMicrophoneOff } from '@tabler/icons-react';
 
 declare global {
   interface Window {
@@ -10,59 +11,90 @@ declare global {
 }
 
 type VoiceCommandProps = {
-  onCommand: (command: string) => void;
+  onTranscript: (transcript: string) => void;
+  language?: string;
 };
 
-export default function VoiceCommand({ onCommand }: VoiceCommandProps) {
+export default function VoiceCommand({ onTranscript, language = 'en-US' }: VoiceCommandProps) {
   const [isListening, setIsListening] = useState(false);
   const [recognition, setRecognition] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const startListening = useCallback(() => {
+    if (recognition) {
+      recognition.start();
+      setIsListening(true);
+      setError(null);
+    }
+  }, [recognition]);
+
+  const stopListening = useCallback(() => {
+    if (recognition) {
+      recognition.stop();
+      setIsListening(false);
+    }
+  }, [recognition]);
 
   useEffect(() => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (SpeechRecognition) {
       const recognitionInstance = new SpeechRecognition();
-      recognitionInstance.continuous = false;
-      recognitionInstance.lang = 'en-US';
-      recognitionInstance.interimResults = false;
-      recognitionInstance.maxAlternatives = 1;
+      recognitionInstance.continuous = true;
+      recognitionInstance.interimResults = true;
+      recognitionInstance.lang = language;
 
       recognitionInstance.onresult = (event: any) => {
-        const command = event.results[0][0].transcript;
-        onCommand(command);
-        setIsListening(false);
+        const result = event.results[event.results.length - 1];
+        if (result.isFinal) {
+          onTranscript(result[0].transcript);
+        }
       };
 
       recognitionInstance.onerror = (event: any) => {
         console.error('Speech recognition error', event.error);
+        setError(`Error: ${event.error}`);
+        setIsListening(false);
+      };
+
+      recognitionInstance.onend = () => {
         setIsListening(false);
       };
 
       setRecognition(recognitionInstance);
     }
-  }, [onCommand]);
+  }, [language, onTranscript]);
 
   const toggleListening = () => {
     if (isListening) {
-      recognition.stop();
+      stopListening();
     } else {
-      recognition.start();
+      startListening();
     }
-    setIsListening(!isListening);
   };
 
   if (!recognition) {
-    return null;
+    return <p>Speech recognition is not supported in this browser.</p>;
   }
 
   return (
-    <button
-      onClick={toggleListening}
-      className={`p-3 rounded-full ${isListening ? 'bg-red-600' : 'bg-blue-600'} hover:opacity-80 transition duration-200`}
-      aria-label={isListening ? 'Stop listening' : 'Start voice command'}
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-      </svg>
-    </button>
+    <div className="relative">
+      <button
+        onClick={toggleListening}
+        className={`p-3 rounded-full ${
+          isListening ? 'bg-red-600' : 'bg-blue-600'
+        } hover:opacity-80 transition duration-200`}
+        aria-label={isListening ? 'Stop listening' : 'Start voice command'}
+      >
+        {isListening ? (
+          <IconMicrophoneOff className="h-6 w-6" />
+        ) : (
+          <IconMicrophone className="h-6 w-6" />
+        )}
+      </button>
+      {isListening && (
+        <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse" />
+      )}
+      {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+    </div>
   );
 }
