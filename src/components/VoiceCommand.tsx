@@ -11,42 +11,30 @@ declare global {
 }
 
 type VoiceCommandProps = {
-  onTranscript: (transcript: string) => void;
+  onTextChange: (text: string) => void;
   language?: string;
 };
 
-export default function VoiceCommand({ onTranscript, language = 'en-US' }: VoiceCommandProps) {
+export default function VoiceCommand({ onTextChange, language = 'en-US' }: VoiceCommandProps) {
   const [isListening, setIsListening] = useState(false);
   const [recognition, setRecognition] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
-
-  const startListening = useCallback(() => {
-    if (recognition) {
-      recognition.start();
-      setIsListening(true);
-      setError(null);
-    }
-  }, [recognition]);
-
-  const stopListening = useCallback(() => {
-    if (recognition) {
-      recognition.stop();
-      setIsListening(false);
-    }
-  }, [recognition]);
+  const [hasFinalResult, setHasFinalResult] = useState(false);
 
   useEffect(() => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (SpeechRecognition) {
       const recognitionInstance = new SpeechRecognition();
-      recognitionInstance.continuous = true;
+      recognitionInstance.continuous = false;
       recognitionInstance.interimResults = true;
       recognitionInstance.lang = language;
 
       recognitionInstance.onresult = (event: any) => {
-        const result = event.results[event.results.length - 1];
+        const result = event.results[0];
         if (result.isFinal) {
-          onTranscript(result[0].transcript);
+          onTextChange(result[0].transcript);
+          setHasFinalResult(true);
+          stopListening();
         }
       };
 
@@ -62,7 +50,24 @@ export default function VoiceCommand({ onTranscript, language = 'en-US' }: Voice
 
       setRecognition(recognitionInstance);
     }
-  }, [language, onTranscript]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [language, onTextChange]);
+
+  const startListening = useCallback(() => {
+    if (recognition) {
+      recognition.start();
+      setIsListening(true);
+      setError(null);
+      setHasFinalResult(false);
+    }
+  }, [recognition]);
+
+  const stopListening = useCallback(() => {
+    if (recognition) {
+      recognition.stop();
+      setIsListening(false);
+    }
+  }, [recognition]);
 
   const toggleListening = () => {
     if (isListening) {
