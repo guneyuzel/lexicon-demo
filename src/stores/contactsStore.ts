@@ -9,6 +9,7 @@ type ContactsStore = {
   contacts: Contact[];
   addContact: (name: string, publicKey: string) => void;
   removeContact: (publicKey: string) => void;
+  editContact: (oldPublicKey: string, name: string, newPublicKey: string) => void;
   loadContacts: () => void;
 };
 
@@ -21,6 +22,13 @@ export const useContactsStore = create<ContactsStore>((set) => ({
   }),
   removeContact: (publicKey) => set((state) => {
     const newContacts = state.contacts.filter(contact => contact.publicKey !== publicKey);
+    localStorage.setItem("contacts", JSON.stringify(newContacts));
+    return { contacts: newContacts };
+  }),
+  editContact: (oldPublicKey, name, newPublicKey) => set((state) => {
+    const newContacts = state.contacts.map(contact => 
+      contact.publicKey === oldPublicKey ? { name, publicKey: newPublicKey } : contact
+    );
     localStorage.setItem("contacts", JSON.stringify(newContacts));
     return { contacts: newContacts };
   }),
