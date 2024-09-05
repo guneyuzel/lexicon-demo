@@ -8,7 +8,6 @@ interface ParsedCommand {
 }
 
 export function parseCommand(command: string): ParsedCommand {
-  // Extract action (send or transfer)
   const actionRegex = /\b(send|transfer)\b/i;
   const actionMatch = command.match(actionRegex);
   if (!actionMatch) {
@@ -16,16 +15,14 @@ export function parseCommand(command: string): ParsedCommand {
   }
   const action = actionMatch[0].toLowerCase();
 
-  // Extract amount and token
-  const amountTokenRegex = /(\d+(?:\.\d+)?)\s*(sol|solana)\b/i;
+  const amountTokenRegex = /(\d+(?:\.\d+)?)\s*(\w+)\b/i;
   const amountTokenMatch = command.match(amountTokenRegex);
   if (!amountTokenMatch) {
-    throw new Error('Invalid command. Please specify an amount and token (e.g., "10 SOL").');
+    throw new Error('Invalid command. Please specify an amount and token (e.g., "10 SOL" or "5 USDC").');
   }
   const amount = parseFloat(amountTokenMatch[1]);
-  const token = amountTokenMatch[2].toLowerCase();
+  const token = amountTokenMatch[2].toUpperCase();
 
-  // Extract recipient
   const recipientRegex = /\bto\s+(.+?)(?:[.!?]*)$/i;
   const recipientMatch = command.match(recipientRegex);
   if (!recipientMatch) {
@@ -33,7 +30,6 @@ export function parseCommand(command: string): ParsedCommand {
   }
   const recipientInput = recipientMatch[1].trim();
 
-  // Lookup contact or use as public key
   const recipient = lookupContact(recipientInput) || recipientInput;
 
   return { action, amount, token, recipient };

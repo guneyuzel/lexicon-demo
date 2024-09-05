@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { parseCommand } from "@/utils/parseCommand";
 import { PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL, Connection } from "@solana/web3.js";
@@ -8,11 +8,21 @@ import { useTransactionStore } from '@/stores/transactionStore';
 import VoiceCommand from './VoiceCommand';
 import { IconSend } from '@tabler/icons-react';
 import TransactionFeedback from './TransactionFeedback';
+import { fetchUserTokens, TokenInfo } from "@/utils/fetchUserTokens";
+import { getAssociatedTokenAddress, createAssociatedTokenAccountInstruction, createTransferInstruction } from "@solana/spl-token";
 
 export default function CommandCenter() {
   const [command, setCommand] = useState("");
   const { publicKey, signTransaction, connected } = useWallet();
   const { setStatus } = useTransactionStore();
+  const [userTokens, setUserTokens] = useState<TokenInfo[]>([]);
+
+  useEffect(() => {
+    if (connected && publicKey) {
+      const connection = new Connection("https://api.devnet.solana.com", "confirmed");
+      fetchUserTokens(connection, publicKey).then(setUserTokens);
+    }
+  }, [connected, publicKey]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,14 +37,59 @@ export default function CommandCenter() {
       
       const connection = new Connection("https://api.devnet.solana.com", "confirmed");
       const transaction = new Transaction();
-      
-      transaction.add(
-        SystemProgram.transfer({
-          fromPubkey: publicKey,
-          toPubkey: new PublicKey(parsedCommand.recipient),
-          lamports: parsedCommand.amount * LAMPORTS_PER_SOL,
-        })
-      );
+
+      if (parsedCommand.token === "SOL") {
+        transaction.add(
+          SystemProgram.transfer({
+            fromPubkey: publicKey,
+            toPubkey: new PublicKey(parsedCommand.recipient),
+            lamports: parsedCommand.amount * LAMPORTS_PER_SOL,
+          })
+        );
+      } else {
+        const tokenInfo = userTokens.find(t => t.symbol == parsedCommand.token);
+        if (!tokenInfo) {
+          throw new Error(`Token ${parsedCommand.token} not found in your wallet.`);
+        }
+
+        const mintPublicKey = new PublicKey(tokenInfo.mint);
+        const recipientPublicKey = new PublicKey(parsedCommand.recipient);
+
+        const sourceTokenAccount = await getAssociatedTokenAddress(
+          mintPublicKey,
+          publicKey
+        );
+
+        const destinationTokenAccount = await getAssociatedTokenAddress(
+          mintPublicKey,
+          recipientPublicKey
+        );
+
+        // Check if the destination token account exists
+        const destinationAccountInfo = await connection.getAccountInfo(destinationTokenAccount);
+
+        if (!destinationAccountInfo) {
+          // If the account doesn't exist, add an instruction to create it
+          transaction.add(
+            createAssociatedTokenAccountInstruction(
+              publicKey,
+              destinationTokenAccount,
+              recipientPublicKey,
+              mintPublicKey
+            )
+          );
+        }
+
+        // Add the transfer instruction
+        transaction.add(
+          createTransferInstruction(
+            sourceTokenAccount,
+            destinationTokenAccount,
+            publicKey,
+            parsedCommand.amount * Math.pow(10, tokenInfo.decimals)
+          )
+        );
+      }
 
       const { blockhash } = await connection.getLatestBlockhash();
       transaction.recentBlockhash = blockhash;
@@ -49,7 +104,7 @@ export default function CommandCenter() {
         throw new Error("Transaction failed");
       }
 
-      setStatus('success', "Transaction successful!", txSignature);
+      setStatus('success', `Successfully sent ${parsedCommand.amount} ${parsedCommand.token} to ${parsedCommand.recipient}`, txSignature);
     } catch (error) {
       console.error("Error executing command:", error);
       setStatus('error', error instanceof Error ? error.message : "An unknown error occurred");
@@ -71,7 +126,7 @@ export default function CommandCenter() {
             type="text"
             value={command}
             onChange={(e) => setCommand(e.target.value)}
-            placeholder="Enter your command (e.g., 'Send 1 SOL to Alice' or 'Transfer 2.5 SOL to abc123')"
+            placeholder="Enter your command (e.g., 'Send 1 SOL to Alice' or 'Transfer 2.5 USDC to abc123')"
             className="flex-grow p-3 bg-gray-700 rounded text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             aria-label="Command input"
           />
