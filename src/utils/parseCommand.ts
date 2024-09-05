@@ -8,7 +8,6 @@ interface ParsedCommand {
 }
 
 export function parseCommand(command: string): ParsedCommand {
-
   // Extract action (send or transfer)
   const actionRegex = /\b(send|transfer)\b/i;
   const actionMatch = command.match(actionRegex);

@@ -16,15 +16,17 @@ export default function ContactsList() {
 
   const handleAddContact = (e: React.FormEvent) => {
     e.preventDefault();
-    if (newName && newPublicKey) {
+    if (newName.trim() && newPublicKey.trim()) {
       try {
-        new PublicKey(newPublicKey);
-        addContact(newName, newPublicKey);
+        new PublicKey(newPublicKey.trim());
+        addContact(newName.trim(), newPublicKey.trim());
         setNewName("");
         setNewPublicKey("");
       } catch (error) {
         alert("Invalid public key");
       }
+    } else {
+      alert("Please enter both name and public key");
     }
   };
 
