@@ -23,7 +23,7 @@ export default function ContactsList() {
         setNewName("");
         setNewPublicKey("");
       } catch (error) {
-        alert("Invalid public key");
+        alert("Invalid public key or recipient");
       }
     } else {
       alert("Please enter both name and public key");

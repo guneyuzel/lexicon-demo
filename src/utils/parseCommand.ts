@@ -17,16 +17,16 @@ export function parseCommand(command: string): ParsedCommand {
   const action = actionMatch[0].toLowerCase();
 
   // Extract amount and token
-  const amountTokenRegex = /(\d+(\.\d+)?)\s*(sol)\b/i;
+  const amountTokenRegex = /(\d+(?:\.\d+)?)\s*(sol)\b/i;
   const amountTokenMatch = command.match(amountTokenRegex);
   if (!amountTokenMatch) {
     throw new Error('Invalid command. Please specify an amount and token (e.g., "10 SOL").');
   }
   const amount = parseFloat(amountTokenMatch[1]);
-  const token = amountTokenMatch[3].toLowerCase();
+  const token = amountTokenMatch[2].toLowerCase();
 
   // Extract recipient
-  const recipientRegex = /\bto\s+(.+)$/i;
+  const recipientRegex = /\bto\s+(.+?)(?:[.!?]*)$/i;
   const recipientMatch = command.match(recipientRegex);
   if (!recipientMatch) {
     throw new Error('Invalid command. Please specify a recipient.');
