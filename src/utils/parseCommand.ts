@@ -1,4 +1,5 @@
 import { lookupContact } from "./contactLookup";
+import { PublicKey } from "@solana/web3.js";
 
 interface ParsedCommand {
   action: string;
@@ -23,14 +24,28 @@ export function parseCommand(command: string): ParsedCommand {
   const amount = parseFloat(amountTokenMatch[1]);
   const token = amountTokenMatch[2].toUpperCase();
 
-  const recipientRegex = /\bto\s+(.+?)(?:[.!?]*)$/i;
-  const recipientMatch = command.match(recipientRegex);
-  if (!recipientMatch) {
-    throw new Error('Invalid command. Please specify a recipient.');
-  }
-  const recipientInput = recipientMatch[1].trim();
+  const words = command.split(/\s+/);
+  let recipient = '';
 
-  const recipient = lookupContact(recipientInput) || recipientInput;
+  for (const word of words) {
+    if (word === 'to') continue; // Skip the 'to' word if present
+    const contact = lookupContact(word);
+    if (contact) {
+      recipient = contact;
+      break;
+    }
+    try {
+      new PublicKey(word);
+      recipient = word;
+      break;
+    } catch {
+      // Not a valid public key, continue to next word
+    }
+  }
+
+  if (!recipient) {
+    throw new Error('Invalid command. Please specify a valid recipient (contact name or public key).');
+  }
 
   return { action, amount, token, recipient };
 }
