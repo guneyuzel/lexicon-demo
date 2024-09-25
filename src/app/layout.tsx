@@ -9,7 +9,7 @@ const WalletContextProviderDynamic = dynamic(
 );
 
 export const metadata: Metadata = {
-  title: "Solana AI Assistant",
+  title: "Lexicon Demo",
   description: "Execute Solana transactions using natural language commands",
 };
 

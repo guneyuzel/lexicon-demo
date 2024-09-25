@@ -16,7 +16,7 @@ export default function Sidebar() {
 
   return (
     <div className="w-64 h-screen bg-gray-800 p-6 flex flex-col">
-      <h1 className="text-2xl font-bold mb-8 text-center">Solana AI Assistant</h1>
+      <h1 className="text-2xl font-bold mb-8 text-center">Lexicon Demo</h1>
       <nav className="flex-grow">
         <ul className="space-y-2">
           {navItems.map((item) => (
