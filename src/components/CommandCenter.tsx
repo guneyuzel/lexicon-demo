@@ -47,7 +47,10 @@ export default function CommandCenter() {
           })
         );
       } else {
-        const tokenInfo = userTokens.find(t => t.symbol == parsedCommand.token);
+        const tokenInfo = userTokens.find(t => 
+          t.symbol?.toLowerCase() === parsedCommand.token.toLowerCase() || 
+          t.name?.toLowerCase() === parsedCommand.token.toLowerCase()
+        );
         if (!tokenInfo) {
           throw new Error(`Token ${parsedCommand.token} not found in your wallet.`);
         }

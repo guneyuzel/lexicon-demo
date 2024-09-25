@@ -6,6 +6,7 @@ export interface TokenInfo {
   balance: number;
   decimals: number;
   symbol?: string;
+  name?: string;
 }
 
 export async function fetchUserTokens(connection: Connection, publicKey: PublicKey): Promise<TokenInfo[]> {
@@ -20,6 +21,7 @@ export async function fetchUserTokens(connection: Connection, publicKey: PublicK
       balance: parsedInfo.tokenAmount.uiAmount,
       decimals: parsedInfo.tokenAmount.decimals,
       symbol: parsedInfo.symbol,
+      name: parsedInfo.tokenName, // Add this line to include the token name
     };
   });
 }

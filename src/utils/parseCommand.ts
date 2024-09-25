@@ -8,6 +8,12 @@ interface ParsedCommand {
   recipient: string;
 }
 
+const tokenAliases: { [key: string]: string } = {
+  'solana': 'SOL',
+  'usdc': 'USDC',
+  // Add more token aliases here
+};
+
 export function parseCommand(command: string): ParsedCommand {
   const actionRegex = /\b(send|transfer)\b/i;
   const actionMatch = command.match(actionRegex);
@@ -22,7 +28,10 @@ export function parseCommand(command: string): ParsedCommand {
     throw new Error('Invalid command. Please specify an amount and token (e.g., "10 SOL" or "5 USDC").');
   }
   const amount = parseFloat(amountTokenMatch[1]);
-  const token = amountTokenMatch[2].toUpperCase();
+  let token = amountTokenMatch[2].toUpperCase();
+
+  // Check if the token is an alias and replace it with the symbol
+  token = tokenAliases[token.toLowerCase()] || token;
 
   const words = command.split(/\s+/);
   let recipient = '';
