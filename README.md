@@ -15,7 +15,3 @@ Solana AI Assistant is a Next.js-based web application that allows users to inte
 - Node.js (v14 or later)
 - npm or yarn
 - A Solana wallet (e.g., Phantom)
-
-## License
-
-This project is open source and available under the [MIT License](LICENSE).
