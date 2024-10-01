@@ -1,6 +1,6 @@
 # Lexicon Demo
 
-Lexicon is a Next.js-based web application that allows users to interact with the Solana blockchain using natural language commands and voice input.
+Lexicon Demo is a web application that allows users to interact with the Solana blockchain using natural language commands and voice input.
 
 ## Features
 
