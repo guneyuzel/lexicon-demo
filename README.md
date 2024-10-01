@@ -1,14 +1,13 @@
-# Solana AI Assistant
+# Lexicon Demo
 
-Solana AI Assistant is a Next.js-based web application that allows users to interact with the Solana blockchain using natural language commands and voice input. The application provides a user-friendly interface for managing Solana transactions, contacts, and wallet information.
+Lexicon is a Next.js-based web application that allows users to interact with the Solana blockchain using natural language commands and voice input.
 
 ## Features
 
-- Natural language processing for Solana transactions
+- Natural language processing algorithms for Solana transactions
 - Voice command input for transaction creation
 - Wallet connection and balance display
 - Contact management system
-- Transaction history viewer
 
 ## Prerequisites
 
