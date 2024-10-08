@@ -82,18 +82,18 @@ export default function VoiceCommand({ onTextChange, language = 'en-US' }: Voice
   }
 
   return (
-    <div className="relative">
+    <div className="absolute right-2 top-1/2 transform -translate-y-1/2">
       <button
         onClick={toggleListening}
-        className={`p-3 rounded-full ${
-          isListening ? 'bg-red-600' : 'bg-blue-600'
+        className={`p-2 rounded-full ${
+          isListening ? 'bg-red-600' : 'bg-white/10'
         } hover:opacity-80 transition duration-200`}
         aria-label={isListening ? 'Stop listening' : 'Start voice command'}
       >
         {isListening ? (
-          <IconMicrophoneOff className="h-6 w-6" />
+          <IconMicrophoneOff className="h-6 w-6 text-white" />
         ) : (
-          <IconMicrophone className="h-6 w-6" />
+          <IconMicrophone className="h-6 w-6 text-white" />
         )}
       </button>
       {isListening && (

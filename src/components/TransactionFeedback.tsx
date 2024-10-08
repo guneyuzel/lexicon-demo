@@ -25,7 +25,7 @@ export default function TransactionFeedback() {
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 50 }}
-        className={`mt-6 p-4 rounded-lg ${bg} border ${color} shadow-lg`}
+        className={`p-4 rounded-lg ${bg} border ${color} shadow-lg`}
       >
         <div className="flex items-start justify-between">
           <div className="flex items-center space-x-3">
