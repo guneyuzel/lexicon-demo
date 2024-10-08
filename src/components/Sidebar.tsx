@@ -24,7 +24,7 @@ export default function Sidebar() {
           height={32}
           className="mr-2"
         />
-        <h1 className="text-2xl font-bold text-white">Lexicon AI</h1>
+        <h1 className="text-2xl font-bold text-white">Lexicon Demo</h1>
       </div>
       <nav className="flex-grow">
         <ul className="space-y-2">
