@@ -42,7 +42,7 @@ export default function Home() {
             </div>
           </div>
         ) : (
-          <p className="text-white">Connect your wallet to view balance and execute commands.</p>
+          <p className="text-white">Connect your wallet (devnet) to view balance and execute commands.</p>
         )}
       </div>
       <CommandCenter />
