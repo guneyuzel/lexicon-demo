@@ -11,7 +11,6 @@ interface ParsedCommand {
 const tokenAliases: { [key: string]: string } = {
   'solana': 'SOL',
   'usdc': 'USDC',
-  // Add more token aliases here
 };
 
 export function parseCommand(command: string): ParsedCommand {
@@ -36,8 +35,17 @@ export function parseCommand(command: string): ParsedCommand {
   const words = command.split(/\s+/);
   let recipient = '';
 
-  for (const word of words) {
-    if (word === 'to') continue; // Skip the 'to' word if present
+  for (let i = 0; i < words.length; i++) {
+    let word = words[i];
+    if (word.toLowerCase() === 'to' && i + 1 < words.length) {
+      const possibleRecipient = words.slice(i + 1).join(' ');
+      const contact = lookupContact(possibleRecipient);
+      if (contact) {
+        recipient = contact;
+        break;
+      }
+    }
+    
     const contact = lookupContact(word);
     if (contact) {
       recipient = contact;
