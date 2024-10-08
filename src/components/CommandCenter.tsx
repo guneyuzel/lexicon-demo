@@ -127,30 +127,34 @@ export default function CommandCenter() {
   };
 
   return (
-    <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
-      <h3 className="text-2xl font-bold mb-4 text-white">Command Center</h3>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="flex items-center space-x-2">
+    <div className="bg-black p-8 rounded-lg shadow-lg border border-white/10">
+      <div className="flex items-center justify-between mb-6">
+        <h3 className="text-2xl font-bold text-white">AI Command Center</h3>
+      </div>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="relative">
           <input
             type="text"
             value={command}
             onChange={(e) => setCommand(e.target.value)}
-            placeholder="Enter your command (e.g., 'Send 1 SOL to Alice' or 'Transfer 2.5 USDC to abc123')"
-            className="flex-grow p-3 bg-gray-700 rounded text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter your command (e.g., 'Send 1 SOL to Alice')"
+            className="w-full p-4 bg-white/5 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/20 transition duration-200"
             aria-label="Command input"
           />
           <VoiceCommand onTextChange={handleTextChange} language="en-US" />
         </div>
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white p-3 rounded hover:bg-blue-700 transition duration-200 flex items-center justify-center"
+          className="w-full bg-white text-black p-4 rounded-lg hover:bg-gray-200 transition duration-200 flex items-center justify-center font-semibold"
           disabled={!connected}
         >
           <IconSend className="mr-2" size={20} />
           Execute Command
         </button>
       </form>
-      <TransactionFeedback />
+      <div className="mt-6">
+        <TransactionFeedback />
+      </div>
     </div>
   );
 }

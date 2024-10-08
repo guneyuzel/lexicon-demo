@@ -11,44 +11,56 @@ interface ParsedCommand {
 const tokenAliases: { [key: string]: string } = {
   'solana': 'SOL',
   'usdc': 'USDC',
-  // Add more token aliases here
 };
 
 export function parseCommand(command: string): ParsedCommand {
-  const actionRegex = /\b(send|transfer)\b/i;
-  const actionMatch = command.match(actionRegex);
-  if (!actionMatch) {
-    throw new Error('Invalid command. Please specify "send" or "transfer".');
-  }
-  const action = actionMatch[0].toLowerCase();
-
-  const amountTokenRegex = /(\d+(?:\.\d+)?)\s*(\w+)\b/i;
-  const amountTokenMatch = command.match(amountTokenRegex);
-  if (!amountTokenMatch) {
-    throw new Error('Invalid command. Please specify an amount and token (e.g., "10 SOL" or "5 USDC").');
-  }
-  const amount = parseFloat(amountTokenMatch[1]);
-  let token = amountTokenMatch[2].toUpperCase();
-
-  // Check if the token is an alias and replace it with the symbol
-  token = tokenAliases[token.toLowerCase()] || token;
-
-  const words = command.split(/\s+/);
+  const words = command.toLowerCase().split(/\s+/);
+  let action = '';
+  let amount = 0;
+  let token = '';
   let recipient = '';
 
-  for (const word of words) {
-    if (word === 'to') continue; // Skip the 'to' word if present
-    const contact = lookupContact(word);
-    if (contact) {
-      recipient = contact;
-      break;
-    }
-    try {
-      new PublicKey(word);
-      recipient = word;
-      break;
-    } catch {
-      // Not a valid public key, continue to next word
+  // Find action
+  const actionIndex = words.findIndex(word => word === 'send' || word === 'transfer');
+  if (actionIndex !== -1) {
+    action = words[actionIndex];
+  } else {
+    throw new Error('Invalid command. Please specify "send" or "transfer".');
+  }
+
+  // Find amount and token
+  const amountTokenRegex = /(\d+(?:\.\d+)?)\s*(?:amount\s+of\s+)?(\w+)/i;
+  const amountTokenMatch = command.match(amountTokenRegex);
+  if (amountTokenMatch) {
+    amount = parseFloat(amountTokenMatch[1]);
+    token = amountTokenMatch[2].toUpperCase();
+    // Check if the token is an alias and replace it with the symbol
+    token = tokenAliases[token.toLowerCase()] || token;
+  } else {
+    throw new Error('Invalid command. Please specify an amount and token (e.g., "10 SOL" or "5 USDC").');
+  }
+
+  // Find recipient
+  const toIndex = words.indexOf('to');
+  if (toIndex !== -1 && toIndex < words.length - 1) {
+    const possibleRecipient = words.slice(toIndex + 1).join(' ');
+    recipient = lookupContact(possibleRecipient) || possibleRecipient;
+  } else {
+    // If 'to' is not found, check each word after the token
+    const tokenIndex = words.findIndex(word => word === token.toLowerCase());
+    for (let i = tokenIndex + 1; i < words.length; i++) {
+      const contact = lookupContact(words[i]);
+      if (contact) {
+        recipient = contact;
+        break;
+      }
+      try {
+        new PublicKey(words[i]);
+        recipient = words[i];
+        break;
+      } catch {
+        // Not a valid public key, continue to next word
+      }
     }
   }
 

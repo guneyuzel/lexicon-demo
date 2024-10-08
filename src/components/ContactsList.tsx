@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { PublicKey } from "@solana/web3.js";
 import { useContactsStore } from "@/stores/contactsStore";
+import { IconEdit, IconTrash, IconPlus, IconX } from '@tabler/icons-react';
 
 export default function ContactsList() {
   const { contacts, addContact, removeContact, editContact, loadContacts } = useContactsStore();
@@ -66,69 +67,71 @@ export default function ContactsList() {
   );
 
   return (
-    <div className="bg-gray-800 p-6 rounded-lg">
-      <h2 className="text-2xl font-bold mb-4 text-white">Contacts</h2>
+    <div className="bg-black p-8 rounded-lg shadow-lg border border-white/10">
+      <h2 className="text-2xl font-bold mb-6 text-white">Contacts</h2>
       <input
         type="text"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         placeholder="Search contacts..."
-        className="w-full p-3 mb-4 bg-gray-700 rounded text-white"
+        className="w-full p-4 mb-6 bg-white/5 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/20 transition duration-200"
       />
-      <ul className="space-y-2 mb-4">
+      <ul className="space-y-4 mb-6">
         {filteredContacts.map((contact) => (
-          <li key={contact.publicKey} className="flex justify-between items-center bg-gray-700 p-3 rounded">
+          <li key={contact.publicKey} className="flex justify-between items-center bg-white/5 p-4 rounded-lg">
             <span className="text-white">
               <span className="font-bold">{contact.name}:</span>{" "}
               {contact.publicKey.slice(0, 4)}...{contact.publicKey.slice(-4)}
             </span>
-            <div>
+            <div className="space-x-2">
               <button
                 onClick={() => startEditing(contact)}
-                className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition duration-200 mr-2"
+                className="bg-white/10 text-white p-2 rounded-full hover:bg-white/20 transition duration-200"
                 aria-label={`Edit ${contact.name}`}
               >
-                Edit
+                <IconEdit size={20} />
               </button>
               <button
                 onClick={() => removeContact(contact.publicKey)}
-                className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition duration-200"
+                className="bg-white/10 text-white p-2 rounded-full hover:bg-white/20 transition duration-200"
                 aria-label={`Remove ${contact.name}`}
               >
-                Remove
+                <IconTrash size={20} />
               </button>
             </div>
           </li>
         ))}
       </ul>
-      <form onSubmit={editingContact ? handleEditContact : handleAddContact} className="space-y-2">
+      <form onSubmit={editingContact ? handleEditContact : handleAddContact} className="space-y-4">
         <input
           type="text"
           value={newName}
           onChange={(e) => setNewName(e.target.value)}
           placeholder="Contact Name"
-          className="w-full p-3 bg-gray-700 rounded text-white"
+          className="w-full p-4 bg-white/5 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/20 transition duration-200"
         />
         <input
           type="text"
           value={newPublicKey}
           onChange={(e) => setNewPublicKey(e.target.value)}
           placeholder="Public Key"
-          className="w-full p-3 bg-gray-700 rounded text-white"
+          className="w-full p-4 bg-white/5 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/20 transition duration-200"
         />
-        <div className="flex space-x-2">
+        <div className="flex space-x-4">
           <button
             type="submit"
-            className="flex-1 bg-blue-600 text-white p-3 rounded hover:bg-blue-700 transition duration-200"
+            className="flex-1 bg-white text-black p-4 rounded-lg hover:bg-gray-200 transition duration-200 flex items-center justify-center font-semibold"
           >
+            {editingContact ? <IconEdit className="mr-2" size={20} /> : <IconPlus className="mr-2" size={20} />}
             {editingContact ? "Update Contact" : "Add Contact"}
           </button>
           {editingContact && (
             <button
               type="button"
               onClick={cancelEditing}
-              className="flex-1 bg-gray-600 text-white p-3 rounded hover:bg-gray-700 transition duration-200"
+              className="flex-1 bg-white/10 text-white p-4 rounded-lg hover:bg-white/20 transition duration-200 flex items-center justify-center font-semibold"
             >
+              <IconX className="mr-2" size={20} />
               Cancel
             </button>
           )}
