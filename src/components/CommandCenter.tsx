@@ -23,7 +23,11 @@ import {
 } from "@solana/spl-token";
 import { motion } from "framer-motion";
 
-export default function CommandCenter() {
+interface CommandCenterProps {
+  initialMessage?: string;
+}
+
+export default function CommandCenter({ initialMessage }: CommandCenterProps) {
   const [command, setCommand] = useState("");
   const { publicKey, signTransaction, connected } = useWallet();
   const { addTransaction, updateTransaction } = useTransactionStore();
@@ -36,6 +40,12 @@ export default function CommandCenter() {
     }>
   >([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (initialMessage) {
+      setMessages([{ type: "bot", content: initialMessage }]);
+    }
+  }, [initialMessage]);
 
   useEffect(() => {
     if (connected && publicKey) {

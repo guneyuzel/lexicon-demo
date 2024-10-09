@@ -34,7 +34,7 @@ export default function ChatbotPopup() {
                 </button>
               </div>
               <div className="flex-grow overflow-hidden">
-                <CommandCenter />
+                <CommandCenter initialMessage="Hello! How can I assist you with your Solana transactions today?" />
               </div>
             </motion.div>
           </motion.div>
