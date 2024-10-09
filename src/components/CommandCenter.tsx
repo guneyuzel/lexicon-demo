@@ -26,7 +26,7 @@ import { motion } from "framer-motion";
 export default function CommandCenter() {
   const [command, setCommand] = useState("");
   const { publicKey, signTransaction, connected } = useWallet();
-  const { setStatus, status, message, signature } = useTransactionStore();
+  const { addTransaction, updateTransaction } = useTransactionStore();
   const [userTokens, setUserTokens] = useState<TokenInfo[]>([]);
   const [messages, setMessages] = useState<
     Array<{
@@ -36,9 +36,6 @@ export default function CommandCenter() {
     }>
   >([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const [currentTransactionId, setCurrentTransactionId] = useState<
-    string | null
-  >(null);
 
   useEffect(() => {
     if (connected && publicKey) {
@@ -54,46 +51,30 @@ export default function CommandCenter() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  useEffect(() => {
-    if (status !== "idle") {
-      if (currentTransactionId) {
-        // Update existing transaction feedback
-        setMessages((prev) =>
-          prev.map((msg) =>
-            msg.id === currentTransactionId
-              ? { ...msg, content: <TransactionFeedback /> }
-              : msg
-          )
-        );
-      } else {
-        // Add new transaction feedback
-        const newId = Date.now().toString();
-        setCurrentTransactionId(newId);
-        setMessages((prev) => [
-          ...prev,
-          { type: "bot", content: <TransactionFeedback />, id: newId },
-        ]);
-      }
-    } else {
-      // Reset currentTransactionId when the transaction is complete
-      setCurrentTransactionId(null);
-    }
-  }, [status, message, signature]);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!command.trim()) return;
 
-    setMessages((prev) => [...prev, { type: "user", content: command }]);
+    setMessages(prev => [...prev, { type: "user", content: command }]);
 
     if (!connected || !publicKey || !signTransaction) {
-      setStatus("error", "Please connect your wallet first.");
+      const errorId = Date.now().toString();
+      addTransaction({ id: errorId, status: 'error', message: "Please connect your wallet first.", signature: null });
+      setMessages(prev => [
+        ...prev,
+        { type: "bot", content: <TransactionFeedback key={errorId} transactionId={errorId} />, id: errorId },
+      ]);
       return;
     }
 
-    try {
-      setStatus("pending", "Processing transaction...");
+    const transactionId = Date.now().toString();
+    addTransaction({ id: transactionId, status: 'pending', message: "Processing transaction...", signature: null });
+    setMessages(prev => [
+      ...prev,
+      { type: "bot", content: <TransactionFeedback key={transactionId} transactionId={transactionId} />, id: transactionId },
+    ]);
 
+    try {
       const parsedCommand = parseCommand(command);
 
       const connection = new Connection(
@@ -187,16 +168,16 @@ export default function CommandCenter() {
         throw new Error("Transaction failed");
       }
 
-      setStatus(
-        "success",
-        `Successfully sent ${parsedCommand.amount} ${parsedCommand.token} to ${parsedCommand.recipient}`,
-        txSignature
-      );
+      updateTransaction(transactionId, {
+        status: 'success',
+        message: `Successfully sent ${parsedCommand.amount} ${parsedCommand.token} to ${parsedCommand.recipient}`,
+        signature: txSignature
+      });
     } catch (error) {
       console.error("Error executing command:", error);
       const errorMessage =
         error instanceof Error ? error.message : "An unknown error occurred";
-      setStatus("error", errorMessage);
+      updateTransaction(transactionId, { status: 'error', message: errorMessage });
     }
 
     setCommand("");
