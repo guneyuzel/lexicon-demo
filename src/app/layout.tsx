@@ -26,7 +26,6 @@ export default function RootLayout({
       <body className="bg-gray-900 text-white">
         <WalletContextProviderDynamic>
           <div className="flex">
-            <Sidebar />
             <main className="flex-1 p-8">
               {children}
             </main>
