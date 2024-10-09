@@ -80,14 +80,14 @@ export default function Home() {
           <div className="bg-gray-800 bg-opacity-50 p-8 rounded-lg">
             <h3 className="text-2xl font-bold mb-4">How It Works</h3>
             <ol className="list-decimal list-inside space-y-4 text-gray-300">
-              <li>Connect your Solana wallet (devnet)</li>
-              <li>Click the chat icon in the middle of the screen</li>
+              <li>Connect your Solana Devnet wallet</li>
+              <li>Click the try Lexicon button in the center of the screen</li>
               <li>Type or speak your command (e.g., "Send 1 SOL to Alice")</li>
               <li>Review and confirm the transaction</li>
             </ol>
           </div>
           <div className="bg-gray-800 bg-opacity-50 p-8 rounded-lg">
-            <h3 className="text-2xl font-bold mb-4">Key Features</h3>
+            <h3 className="text-2xl font-bold mb-4">Current Features</h3>
             <ul className="list-disc list-inside space-y-4 text-gray-300">
               <li>Natural language processing for easy interactions</li>
               <li>Voice command support for hands-free operation</li>

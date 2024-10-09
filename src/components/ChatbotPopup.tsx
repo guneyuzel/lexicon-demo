@@ -25,7 +25,7 @@ export default function ChatbotPopup() {
               className="bg-gray-800 rounded-lg shadow-lg w-full max-w-2xl h-[500px] flex flex-col"
             >
               <div className="flex justify-between items-center p-4 bg-gray-800 rounded-t-lg">
-                <h3 className="text-xl font-semibold text-white">AI Assistant</h3>
+                <h3 className="text-xl font-semibold text-white">Lexicon AI Assistant</h3>
                 <button
                   onClick={() => setIsOpen(false)}
                   className="text-gray-400 hover:text-white transition-colors"
@@ -45,7 +45,7 @@ export default function ChatbotPopup() {
         className="w-full bg-white text-black p-4 rounded-lg shadow-lg hover:bg-purple-400 transition duration-300 flex items-center justify-center"
       >
         <IconMessageCircle size={24} className="mr-2" />
-        <span>Open AI Assistant</span>
+        <span>Try Lexicon</span>
       </button>
     </div>
   );
