@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import dynamic from 'next/dynamic';
-import Sidebar from '@/components/Sidebar';
+import dynamic from "next/dynamic";
+import Sidebar from "@/components/Sidebar";
 
 const WalletContextProviderDynamic = dynamic(
-  () => import('@/contexts/WalletContextProvider').then(mod => mod.WalletContextProvider),
+  () =>
+    import("@/contexts/WalletContextProvider").then(
+      (mod) => mod.WalletContextProvider
+    ),
   { ssr: false }
 );
 
@@ -22,9 +25,11 @@ export default function RootLayout({
     <html lang="en">
       <body className="bg-gray-900 text-white">
         <WalletContextProviderDynamic>
-          <div className="flex h-screen">
+          <div className="flex">
             <Sidebar />
-            <main className="flex-1 overflow-hidden">{children}</main>
+            <main className="flex-1 p-8">
+              {children}
+            </main>
           </div>
         </WalletContextProviderDynamic>
       </body>

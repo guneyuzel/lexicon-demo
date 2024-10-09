@@ -188,10 +188,7 @@ export default function CommandCenter() {
   };
 
   return (
-    <div className="bg-black p-8 rounded-lg shadow-lg border border-white/10 h-full flex flex-col">
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="text-2xl font-bold text-white">AI Command Center</h3>
-      </div>
+    <div className="bg-gray-900 p-4 h-full flex flex-col">
       <div className="flex-grow overflow-y-auto mb-4 space-y-4">
         {messages
           .filter((message) => message.content)
@@ -210,21 +207,23 @@ export default function CommandCenter() {
           ))}
         <div ref={messagesEndRef} />
       </div>
-      <form onSubmit={handleSubmit} className="flex space-x-2 mt-4">
+      <form onSubmit={handleSubmit} className="flex space-x-2">
         <div className="relative flex-grow">
           <input
             type="text"
             value={command}
             onChange={(e) => setCommand(e.target.value)}
             placeholder="Enter your command (e.g., 'Send 1 SOL to Alice')"
-            className="w-full p-4 bg-white/5 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/20 transition duration-200"
+            className="w-full p-2 pr-10 bg-gray-800 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
             aria-label="Command input"
           />
-          <VoiceCommand onTextChange={handleTextChange} language="en-US" />
+          <div className="absolute right-2 top-1/2 transform -translate-y-1/2">
+            <VoiceCommand onTextChange={handleTextChange} language="en-US" />
+          </div>
         </div>
         <button
           type="submit"
-          className="bg-white text-black p-4 rounded-lg hover:bg-gray-200 transition duration-200 flex items-center justify-center"
+          className="bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600 transition duration-200 flex items-center justify-center"
           disabled={!connected}
         >
           <IconSend size={20} />
