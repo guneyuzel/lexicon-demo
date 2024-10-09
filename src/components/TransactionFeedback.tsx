@@ -2,10 +2,17 @@ import { useTransactionStore } from '@/stores/transactionStore';
 import { IconCheck, IconX, IconLoader2 } from '@tabler/icons-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export default function TransactionFeedback() {
-  const { status, message, signature } = useTransactionStore();
+interface TransactionFeedbackProps {
+  transactionId: string;
+}
 
-  if (status === 'idle') return null;
+export default function TransactionFeedback({ transactionId }: TransactionFeedbackProps) {
+  const { transactions } = useTransactionStore();
+  const transaction = transactions.find(t => t.id === transactionId);
+
+  if (!transaction) return null;
+
+  const { status, message, signature } = transaction;
 
   const statusConfig = {
     pending: { icon: IconLoader2, color: 'border-yellow-500', bg: 'bg-yellow-500/10' },
