@@ -1,15 +1,26 @@
 import { create } from "zustand";
 
-interface TransactionStore {
-  status: 'idle' | 'pending' | 'success' | 'error';
+interface Transaction {
+  id: string;
+  status: 'pending' | 'success' | 'error';
   message: string;
   signature: string | null;
-  setStatus: (status: 'idle' | 'pending' | 'success' | 'error', message: string, signature?: string | null) => void;
+}
+
+interface TransactionStore {
+  transactions: Transaction[];
+  addTransaction: (transaction: Transaction) => void;
+  updateTransaction: (id: string, updates: Partial<Transaction>) => void;
 }
 
 export const useTransactionStore = create<TransactionStore>((set) => ({
-  status: 'idle',
-  message: '',
-  signature: null,
-  setStatus: (status, message, signature = null) => set({ status, message, signature }),
+  transactions: [],
+  addTransaction: (transaction) => set((state) => ({ 
+    transactions: [...state.transactions, transaction] 
+  })),
+  updateTransaction: (id, updates) => set((state) => ({
+    transactions: state.transactions.map(t => 
+      t.id === id ? { ...t, ...updates } : t
+    )
+  })),
 }));
