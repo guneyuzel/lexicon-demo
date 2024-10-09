@@ -19,8 +19,8 @@ export default function ContactsPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-purple-900 text-white">
-      <header className="bg-gray-800 bg-opacity-50 py-4">
+    <div className="min-h-screen bg-gradient-to-br from-black-900 to-black-900 text-white">
+      <header className="bg-black-800 bg-opacity-50 py-4">
         <div className="container mx-auto px-4 flex justify-between items-center">
           <div className="flex items-center space-x-2">
             <Image src="/lexicon.png" alt="Lexicon AI Logo" width={32} height={32} />
@@ -47,7 +47,7 @@ export default function ContactsPage() {
 
       <main className="container mx-auto px-4 py-8">
         <div className="text-center mt-12 mb-16">
-          <h2 className="text-5xl font-extrabold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600">
+          <h2 className="text-5xl font-extrabold mb-6 bg-clip-text color-white">
             Contacts
           </h2>
           <p className="text-xl mb-8 text-gray-300 max-w-2xl mx-auto">

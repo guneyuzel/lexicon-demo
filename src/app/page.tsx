@@ -35,8 +35,8 @@ export default function Home() {
   }, [connected, publicKey, setBalance]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-purple-900 text-white">
-      <header className="bg-gray-800 bg-opacity-50 py-4">
+    <div className="min-h-screen bg-gradient-to-br from-black-900 to-black-900 text-white">
+      <header className="bg-black-800 bg-opacity-50 py-4">
         <div className="container mx-auto px-4 flex justify-between items-center">
           <div className="flex items-center space-x-2">
             <Image src="/lexicon.png" alt="Lexicon AI Logo" width={32} height={32} />
@@ -63,8 +63,8 @@ export default function Home() {
 
       <main className="container mx-auto px-4 py-12 overflow-y-auto">
         <div className="text-center mb-16">
-          <h2 className="text-5xl font-extrabold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600">
-            Lexicon AI: Your Web3 Assistant
+          <h2 className="text-5xl font-extrabold mb-6 bg-clip-text color-white">
+            Lexicon: Your Web3 Assistant
           </h2>
           <p className="text-xl mb-8 text-gray-300 max-w-2xl mx-auto">
             Experience the future of blockchain interaction with our AI-powered chatbot. Execute Solana transactions using simple, conversational commands.

@@ -42,7 +42,7 @@ export default function ChatbotPopup() {
       </AnimatePresence>
       <button
         onClick={() => setIsOpen(true)}
-        className="w-full bg-purple-600 text-white p-4 rounded-lg shadow-lg hover:bg-purple-700 transition duration-300 flex items-center justify-center"
+        className="w-full bg-white text-black p-4 rounded-lg shadow-lg hover:bg-purple-400 transition duration-300 flex items-center justify-center"
       >
         <IconMessageCircle size={24} className="mr-2" />
         <span>Open AI Assistant</span>
