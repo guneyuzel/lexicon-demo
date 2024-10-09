@@ -2,7 +2,7 @@ import { create } from "zustand";
 
 interface Transaction {
   id: string;
-  status: 'idle' | 'pending' | 'success' | 'error';
+  status: 'pending' | 'success' | 'error';
   message: string;
   signature: string | null;
 }
