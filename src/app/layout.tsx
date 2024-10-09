@@ -9,7 +9,7 @@ const WalletContextProviderDynamic = dynamic(
 );
 
 export const metadata: Metadata = {
-  title: "Lexicon Demo",
+  title: "Lexicon AI",
   description: "Execute Solana transactions using natural language commands",
 };
 
@@ -24,7 +24,7 @@ export default function RootLayout({
         <WalletContextProviderDynamic>
           <div className="flex h-screen">
             <Sidebar />
-            <main className="flex-1 p-8 overflow-auto">{children}</main>
+            <main className="flex-1 overflow-hidden">{children}</main>
           </div>
         </WalletContextProviderDynamic>
       </body>

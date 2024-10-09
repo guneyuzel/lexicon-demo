@@ -3,7 +3,7 @@ import { IconCheck, IconX, IconLoader2 } from '@tabler/icons-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function TransactionFeedback() {
-  const { status, message, signature, setStatus } = useTransactionStore();
+  const { status, message, signature } = useTransactionStore();
 
   if (status === 'idle') return null;
 
@@ -15,10 +15,6 @@ export default function TransactionFeedback() {
 
   const { icon: StatusIcon, color, bg } = statusConfig[status];
 
-  const handleClose = () => {
-    setStatus('idle', '');
-  };
-
   return (
     <AnimatePresence>
       <motion.div
@@ -27,22 +23,13 @@ export default function TransactionFeedback() {
         exit={{ opacity: 0, y: 50 }}
         className={`p-4 rounded-lg ${bg} border ${color} shadow-lg`}
       >
-        <div className="flex items-start justify-between">
-          <div className="flex items-center space-x-3">
-            <div className={`p-2 rounded-full ${bg} ${color}`}>
-              <StatusIcon className={`w-5 h-5 ${status === 'pending' ? 'animate-spin' : ''}`} />
-            </div>
-            <span className="font-semibold text-white">
-              {status.charAt(0).toUpperCase() + status.slice(1)}
-            </span>
+        <div className="flex items-start">
+          <div className={`p-2 rounded-full ${bg} ${color}`}>
+            <StatusIcon className={`w-5 h-5 ${status === 'pending' ? 'animate-spin' : ''}`} />
           </div>
-          <button
-            onClick={handleClose}
-            className="text-gray-400 hover:text-white transition-colors"
-            aria-label="Close"
-          >
-            <IconX size={20} />
-          </button>
+          <span className="font-semibold text-white ml-3">
+            {status.charAt(0).toUpperCase() + status.slice(1)}
+          </span>
         </div>
         <p className="mt-2 text-gray-300">{message}</p>
         {signature && (
