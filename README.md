@@ -1,16 +1,47 @@
 # Lexicon Demo
 
-Lexicon Demo is a web application that allows users to interact with the Solana blockchain using natural language commands and voice input.
+Lexicon Demo is an innovative web application developed for Colosseum Radar Hackathon that showcases the potential of natural language interactions with the Solana blockchain. Our goal is to simplify blockchain transactions and make them accessible to everyone through conversational AI.
 
-## Features
+## What We're Building
 
-- Natural language processing algorithms for Solana transactions
-- Voice command input for transaction creation
+Lexicon Demo is pushing the boundaries of blockchain interaction by:
+
+1. **SDK Integration**: We're developing an SDK to seamlessly integrate Lexicon into any app, expanding its reach and utility across the Solana ecosystem.
+
+2. **Live Data Integration**: Integrating real-time API data to help users navigate and interact with any Web3 app effortlessly.
+
+3. **Specialized LLM for Solana**: Creating a specialized Language Model focused on Solana-related events and data for more accurate and relevant interactions.
+
+## Current Features
+
+- Natural language processing for Solana transactions
+- Voice command input for hands-free operation
 - Wallet connection and balance display
 - Contact management system
+- Transaction history viewer
+- Support for SOL and SPL token transfers
 
-## Prerequisites
+## How It Works
 
-- Node.js (v14 or later)
-- npm or yarn
-- A Solana wallet (e.g., Phantom)
+1. Connect your Solana Devnet wallet
+2. Click the "Try Lexicon" button in the center of the screen
+3. Add a contact
+4. Type or speak your command (e.g., "Send 1 SOL to Alice")
+5. Review and confirm the transaction
+
+## Contributing
+
+This is a hackathon project, but we're open to contributions and feedback. Feel free to open issues or submit pull requests.
+
+## License
+
+This project is licensed under the GNU General Public License v3.0. See the [LICENSE](LICENSE) file for details.
+
+## Acknowledgements
+
+- Solana Foundation for their blockchain technology and developer tools
+- OpenAI for inspiration on natural language processing
+
+## Disclaimer
+
+This is a hackathon demo project and is not intended for production use. Use at your own risk.
