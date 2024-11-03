@@ -1,6 +1,6 @@
 # Lexicon Demo
 
-Lexicon Demo is an innovative web application developed for Colosseum Radar Hackathon that showcases the potential of natural language interactions with the Solana blockchain. Our goal is to simplify blockchain transactions and make them accessible to everyone through conversational AI.
+Lexicon Demo is an innovative web application developed for the Colosseum Radar Hackathon that showcases the potential of natural language interactions with the Solana blockchain. Our goal is to simplify blockchain transactions and make them accessible to everyone through conversational AI.
 
 ## What We're Building
 
@@ -31,16 +31,15 @@ Lexicon Demo is pushing the boundaries of blockchain interaction by:
 
 ## Contributing
 
-This is a hackathon project, but we're open to contributions and feedback. Feel free to open issues or submit pull requests.
+We're open to contributions and feedback. Feel free to open issues or submit pull requests.
+
+## Future Development
+
+This demo highlights Lexicon's capabilities, which will soon be available as APIs and SDKs, currently under development in a separate repository.
 
 ## License
 
 This project is licensed under the GNU General Public License v3.0. See the [LICENSE](LICENSE) file for details.
-
-## Acknowledgements
-
-- Solana Foundation for their blockchain technology and developer tools
-- OpenAI for inspiration on natural language processing
 
 ## Disclaimer
 
